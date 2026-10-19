@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>InterviewIQ | Virtual Interview Practice</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <nav class="nav">
+    <a class="brand" href="/"><span class="brand-mark">IQ</span> Interview<span>IQ</span></a>
+    <span class="nav-label">AI-POWERED PRACTICE</span>
+  </nav>
+  <main class="container">
+    <section class="hero">
+      <div class="eyebrow"><span class="pulse"></span> YOUR PERSONAL INTERVIEW COACH</div>
+      <h1>Prepare with purpose.<br><span>Interview with confidence.</span></h1>
+      <p>Practice technical and general interview questions, submit your answer, and get structured feedback to improve your next attempt.</p>
+      <div class="hero-pills"><span>✦ Guided practice</span><span>↗ Instant feedback</span><span>◎ Improvement tips</span></div>
+    </section>
+
+    <section class="layout">
+      <form class="panel form-panel" method="post">
+        <div class="section-heading"><div><span class="step">01</span><h2>Set up your session</h2></div><span class="muted">PRACTICE MODE</span></div>
+        <label for="candidate">Candidate name</label>
+        <input id="candidate" name="candidate" placeholder="Enter your name" value="{{ candidate }}">
+        <div class="two-col">
+          <div><label for="role">Target role</label><input id="role" name="role" value="{{ role or 'Software Developer' }}" placeholder="e.g. Data Analyst"></div>
+          <div><label for="category">Interview category</label>
+            <select id="category" name="category">
+              {% for cat in questions.keys() %}
+              <option value="{{ cat }}" {% if category == cat %}selected{% endif %}>{{ cat }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+        <div class="section-heading question-heading"><div><span class="step">02</span><h2>Your interview question</h2></div></div>
+        <label for="question">Choose a question or edit it</label>
+        <select id="question-picker">
+          {% for cat, items in questions.items() %}
+            <optgroup label="{{ cat }}">
+            {% for item in items %}
+              <option value="{{ item }}" {% if question == item %}selected{% endif %}>{{ item }}</option>
+            {% endfor %}
+            </optgroup>
+          {% endfor %}
+        </select>
+        <textarea id="question" name="question" rows="2" required placeholder="Your interview question">{{ question }}</textarea>
+        <label for="answer">Your answer</label>
+        <textarea id="answer" name="answer" rows="7" required placeholder="Structure your answer clearly. Include your approach, an example, and the outcome...">{{ answer }}</textarea>
+        <div class="form-foot"><span class="muted">Tip: Be specific and explain your reasoning.</span><button type="submit">Evaluate my answer <span>→</span></button></div>
+      </form>
+
+      <aside class="panel side-panel">
+        <div class="section-heading"><div><span class="step">03</span><h2>Assessment</h2></div></div>
+        {% if result %}
+          <div class="score-wrap"><div class="score-ring"><div><strong>{{ result.score }}</strong><small>/100</small></div></div><div><h3>Practice score</h3><p class="muted">Use this as a learning signal, not a hiring decision.</p></div></div>
+          <div class="feedback-box"><h3>Coach's feedback</h3><p>{{ result.feedback }}</p></div>
+          <div class="feedback-list"><h3>What went well</h3>
+            {% for item in result.strengths %}<p class="list-item"><span class="check">✓</span>{{ item }}</p>{% endfor %}
+          </div>
+          <div class="feedback-list"><h3>Next improvements</h3>
+            {% for item in result.improvements %}<p class="list-item"><span class="bullet">↗</span>{{ item }}</p>{% endfor %}
+          </div>
+          <div class="method">{{ result.method }}</div>
+        {% else %}
+          <div class="empty-state"><div class="empty-icon">✧</div><h3>Your feedback appears here</h3><p>Submit an answer to receive a practice score, feedback, strengths, and suggested improvements.</p>
+            <div class="preview-stat"><span>01</span><div><b>Answer review</b><small>Clarity and detail</small></div></div>
+            <div class="preview-stat"><span>02</span><div><b>Strengths</b><small>What you did well</small></div></div>
+            <div class="preview-stat"><span>03</span><div><b>Action plan</b><small>How to improve next time</small></div></div>
+          </div>
+        {% endif %}
+        <div class="notice"><b>Responsible use</b><p>This demo is for interview practice. Scores are approximate, may be wrong, and should not be used alone to make hiring decisions.</p></div>
+      </aside>
+    </section>
+    <footer><span>InterviewIQ</span> · Candidate practice platform <span class="footer-right">Built for learning, designed for progress.</span></footer>
+  </main>
+  <script>
+    const picker = document.getElementById('question-picker');
+    const question = document.getElementById('question');
+    picker.addEventListener('change', () => { question.value = picker.value; });
+    if (question.value) {
+      const option = [...picker.options].find(o => o.value === question.value);
+      if (option) picker.value = option.value;
+    }
+  </script>
+</body>
+</html>
